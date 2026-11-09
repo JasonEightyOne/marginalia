@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Marginalia</title>
+    <meta name="description" content="Your personal PDF library and reading room. Store PDFs, read them, highlight, comment, draw and export." />
+    <meta name="theme-color" content="#22577A" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap"
+    />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <!-- ============ LIBRARY ============ -->
+      <section id="libraryView" class="view">
+        <header class="topbar">
+          <a class="brand" href="#" aria-label="Marginalia library">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-name">Marginalia</span>
+          </a>
+          <label class="searchbox">
+            <span class="ico" data-icon="search"></span>
+            <input id="q" type="search" placeholder="Search titles, authors, tags" autocomplete="off" />
+          </label>
+          <button id="uploadBtn" class="btn primary"><span data-icon="upload"></span><span class="lbl">Add PDFs</span></button>
+          <button id="libMenuBtn" class="iconbtn" aria-label="Library options" aria-haspopup="menu"><span data-icon="more"></span></button>
+          <input id="fileInput" type="file" accept="application/pdf,.pdf" multiple hidden />
+          <input id="restoreInput" type="file" accept="application/json,.json" hidden />
+        </header>
+        <div class="lib-scroll" id="libScroll">
+          <div class="lib-inner">
+            <div class="lib-head">
+              <div class="shelves" role="tablist" aria-label="Shelves" id="shelves"></div>
+              <label class="sort">
+                <span class="sr">Sort by</span>
+                <select id="sort">
+                  <option value="recent">Recently read</option>
+                  <option value="added">Recently added</option>
+                  <option value="title">Title A–Z</option>
+                  <option value="progress">Progress</option>
+                </select>
+              </label>
+            </div>
+            <div class="tagbar" id="tagbar"></div>
+            <div class="grid" id="grid"></div>
+            <p class="storage-note" id="storageNote"></p>
+          </div>
+        </div>
+        <div class="dropzone" id="dropzone" hidden>
+          <div class="dropzone-inner"><span data-icon="upload"></span>Drop PDFs to add them to your library</div>
+        </div>
+      </section>
+
+      <!-- ============ READER ============ -->
+      <section id="readerView" class="view" hidden>
+        <header class="rbar">
+          <button id="backBtn" class="iconbtn" aria-label="Back to library"><span data-icon="back"></span></button>
+          <button id="sideBtn" class="iconbtn" aria-label="Toggle sidebar" aria-pressed="true"><span data-icon="sidebar"></span></button>
+          <div class="rtitle" id="rtitle"></div>
+          <div class="pagenav">
+            <button id="prevBtn" class="iconbtn sm" aria-label="Previous page"><span data-icon="chevL"></span></button>
+            <label class="pagebox"><span class="sr">Page</span><input id="pageInput" inputmode="numeric" value="1" /><span id="pageTotal">/ 1</span></label>
+            <button id="nextBtn" class="iconbtn sm" aria-label="Next page"><span data-icon="chevR"></span></button>
+          </div>
+          <div class="zoom">
+            <button id="zoomOut" class="iconbtn sm" aria-label="Zoom out"><span data-icon="minus"></span></button>
+            <button id="zoomLabel" class="zoomlabel" title="Fit to width">100%</button>
+            <button id="zoomIn" class="iconbtn sm" aria-label="Zoom in"><span data-icon="plus"></span></button>
+          </div>
+          <button id="themeBtn" class="iconbtn" aria-label="Reading theme"><span data-icon="moon"></span></button>
+          <button id="exportBtn" class="btn ghost" aria-haspopup="menu"><span data-icon="download"></span><span class="lbl">Export</span></button>
+        </header>
+        <div class="toolbar" id="toolbar" role="toolbar" aria-label="Annotation tools">
+          <div class="tools" id="tools"></div>
+          <span class="tsep"></span>
+          <div class="colors" id="colors" role="radiogroup" aria-label="Color"></div>
+          <span class="tsep"></span>
+          <button id="undoBtn" class="iconbtn" aria-label="Undo (Ctrl+Z)" title="Undo (Ctrl+Z)"><span data-icon="undo"></span></button>
+          <button id="bookmarkBtn" class="iconbtn" aria-label="Bookmark this page (B)" title="Bookmark this page (B)" aria-pressed="false"><span data-icon="bookmark"></span></button>
+          <span class="tool-hint" id="toolHint"></span>
+        </div>
+        <div class="rbody">
+          <aside class="side" id="side">
+            <div class="side-tabs" role="tablist">
+              <button role="tab" data-tab="notes" class="on">Notes <span class="count" id="noteCount">0</span></button>
+              <button role="tab" data-tab="search">Search</button>
+              <button role="tab" data-tab="contents">Contents</button>
+              <button role="tab" data-tab="marks">Bookmarks</button>
+            </div>
+            <div class="side-panel" data-panel="notes">
+              <div class="note-filters" id="noteFilters"></div>
+              <div class="note-list" id="noteList"></div>
+            </div>
+            <div class="side-panel" data-panel="search" hidden>
+              <form class="side-search" id="searchForm">
+                <input id="searchInput" type="search" placeholder="Find in this PDF" autocomplete="off" />
+                <button class="btn small" type="submit">Find</button>
+              </form>
+              <div class="search-results" id="searchResults"></div>
+            </div>
+            <div class="side-panel" data-panel="contents" hidden><div id="outline" class="outline"></div></div>
+            <div class="side-panel" data-panel="marks" hidden><div id="markList" class="mark-list"></div></div>
+          </aside>
+          <main class="stage theme-paper" id="stage">
+            <div class="pages" id="pages"></div>
+            <div class="loading" id="readerLoading" hidden><div class="spinner"></div><span id="loadingText">Opening…</span></div>
+          </main>
+        </div>
+      </section>
+    </div>
+
+    <div id="pop" class="pop" hidden></div>
+    <div id="modal" class="modal" hidden><div class="sheet" role="dialog" aria-modal="true" id="sheet"></div></div>
+    <div id="toasts" class="toasts" aria-live="polite"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
